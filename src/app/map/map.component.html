@@ -68,15 +68,15 @@
                                         list of your created fields:</b></span></div>
                             <div id="existing_fields">
                                 <div *ngFor="let field of fields" class="field-show">
-                                    <a (click)="loadImages(field.externalId)" style="cursor: pointer;">
+                                    <a (click)="firstLoadImages(field.externalId)" style="cursor: pointer;">
                                         <p class="p-field-id">{{ field.externalId }}</p>
                                     </a>
                                 </div>
                             </div>
-                            <div id="create_field_button"><button type="" onClick="createField();"
+                            <div id="create_field_button"><button type="" (click)="goFields()"
                                     class="btn btn-sm btn-dark button-margin">Create a new
                                     field</button></div>
-                            <div id="update_fields_button"><button type="" onClick="loadFields();"
+                            <div id="update_fields_button"><button type="" (click)="loadCreatedFields()"
                                     class="btn btn-sm btn-dark button-margin">Update your
                                     fields</button></div>
                             <br>
@@ -95,35 +95,36 @@
                     <div class="div-information-2">
                         <div id="create_field_div"><span class="span-text"><b>Fill the
                                     information about the field:</b></span></div>
-
                         <div id="field_inputs">
-                            <input required class="form-control form-control-sm input-style" placeholder="Field ID"
-                                name="create_id" type="text" id="create_id">
-                            <input required class="form-control form-control-sm input-style"
-                                placeholder="How much days before you want to see?" name="days_before" type="number"
-                                id="days_before">
-                            <select id="boundery_type" name="boundery_type"
-                                class="form-select form-select-sm input-style" aria-label="Boundery type">
-                                <option value="MultiPolygon">Multi Polygon</option>
-                            </select>
-                            <label class="field-boundery-input" for="field_boundery">Your field
-                                geojson. You can use geojson.io to create one</label>
-                            <textarea class="form-control form-control-sm" id="field_boundery" name="field_boundery"
-                                rows="4"></textarea>
-                            <select id="provider" name="provider" class="form-select form-select-sm input-style"
-                                aria-label="Sattelite image provider">
-                                <option value="Sentinel">Sentinel</option>
-                            </select>
+                            <form [formGroup]="createFieldForm" #formDir="ngForm" onSubmit="return false">
+                                <input required class="form-control form-control-sm input-style" placeholder="Field ID"
+                                    type="text" formControlName="fieldId">
+                                <input required class="form-control form-control-sm input-style"
+                                    placeholder="How much days before you want to see?" type="number"
+                                    formControlName="daysBefore">
+                                <select formControlName="bounderyType" class="form-select form-select-sm input-style"
+                                    aria-label="Boundery type">
+                                    <option value="MultiPolygon">Multi Polygon</option>
+                                </select>
+                                <label class="field-boundery-input" for="field_boundery">Your field
+                                    geojson. You can use geojson.io to create one</label>
+                                <textarea class="form-control form-control-sm" formControlName="fieldBoundery"
+                                    rows="4"></textarea>
+                                <select formControlName="provider" class="form-select form-select-sm input-style"
+                                    aria-label="Sattelite image provider">
+                                    <option value="Sentinel">Sentinel</option>
+                                </select>
+                            </form>
                         </div>
 
-                        <div id="create_field_button"><button type="" onClick="sendField();"
+                        <div id="create_field_button"><button type="" (click)="createField()"
                                 class="btn btn-sm btn-dark button-margin">Create field!</button></div>
 
                         <br>
-                        <div id="create_field_response"></div>
+                        <div id="create_field_response"> {{ createFieldMessage }} </div>
                     </div>
                 </div>
-                <div class="loadings" id="field_create_loading">
+                <div *ngIf="isLoading" class="loadings" id="login_loading">
                     <img src="assets/loading.gif">
                 </div>
             </div>
@@ -144,8 +145,7 @@
                                 <input required class="form-control form-control-sm input-style" placeholder="End Date"
                                     type="date" formControlName="endDate">
                             </div>
-
-                            <div id="search_field_images_button"><button type="" (click)="searchField()"
+                            <div id="search_field_images_button"><button type="" (click)="loadFieldImages()"
                                     class="btn btn-sm btn-dark button-margin">Search
                                     images!</button></div>
                             <div *ngIf="isLoading" class="loadings" id="login_loading">
@@ -153,7 +153,7 @@
                             </div>
                         </form>
                         <br>
-                        <div id="load_response"></div>
+                        <div id="load_response"> {{ loadImagesMessage }} </div>
                         <div class="fields-text" id="selected_field_images">
                             <ul id="ul-list" class="ul-date" class="sessions">
                                 <li *ngFor="let image of images" class="li-date">
