@@ -17,16 +17,27 @@ export class AppService {
     });
   }
 
-  loadFields(): Observable<any> {
-    return this.http.get<any>(this.apiUrl + 'monitored_fields');
+  loadFields(token: string): Observable<any> {
+    let headers = new HttpHeaders().set('Authorization', token);
+    return this.http.get<any>(this.apiUrl + 'monitored_fields', { headers });
   }
 
-  loadImages(fieldId: any, startDate: any, endDate: any): Observable<any> {
-    return this.http.post<any>(this.apiUrl + 'field_images', {
-      id: fieldId,
-      startDate: startDate,
-      endDate: endDate,
-    });
+  loadImages(
+    fieldId: any,
+    startDate: any,
+    endDate: any,
+    token: string
+  ): Observable<any> {
+    let headers = new HttpHeaders().set('Authorization', token);
+    return this.http.post<any>(
+      this.apiUrl + 'field_images',
+      {
+        id: fieldId,
+        startDate: startDate,
+        endDate: endDate,
+      },
+      { headers }
+    );
   }
 
   createField(
@@ -34,13 +45,15 @@ export class AppService {
     daysBefore: any,
     bounderyType: any,
     fieldBoundery: any,
-    provider: any
+    provider: any,
+    token: string
   ): Observable<any> {
+    let headers = new HttpHeaders().set('Authorization', token);
     return this.http.post<any>(this.apiUrl + 'create_field', {
       field_name: fieldId,
       boundery_type: bounderyType,
       field_boundery: fieldBoundery,
-      days_before: daysBefore
-    });
+      days_before: daysBefore,
+    }, { headers });
   }
 }

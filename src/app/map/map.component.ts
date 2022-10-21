@@ -87,6 +87,7 @@ export class MapComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.initMap();
+    localStorage.removeItem('token');
     this.loginForm = new FormGroup({
       email: new FormControl('', [Validators.required]),
       password: new FormControl('', [Validators.required]),
@@ -160,7 +161,7 @@ export class MapComponent implements OnInit, OnDestroy {
   }
 
   doLogin() {
-    this.isLoading = true;
+    this.isLoading = true
     this.loginMessage = '';
     let email = this.getEmail().value;
     let password = this.getPassword().value;
@@ -174,9 +175,11 @@ export class MapComponent implements OnInit, OnDestroy {
     } else {
       this.appService.login(email, password).subscribe((data) => {
         this.isLoading = false;
-        this.loginMessage = data;
-        if (data === 'Congrats! Login done!') {
+        this.loginMessage = data.message;
+        if (data.message === 'Congrats! Login done!') {
           this.isLogged = true;
+          localStorage.setItem('token', data.token);
+          console.log(localStorage.getItem('token'));
           document.getElementById('fields_a')!.click();
           this.loadCreatedFields();
         } else {
@@ -188,7 +191,7 @@ export class MapComponent implements OnInit, OnDestroy {
 
   loadCreatedFields() {
     this.isLoading = true;
-    this.appService.loadFields().subscribe((data) => {
+    this.appService.loadFields(localStorage.getItem('token')!).subscribe((data) => {
       this.isLoading = false;
       this.fields = data;
     });
@@ -209,7 +212,7 @@ export class MapComponent implements OnInit, OnDestroy {
     this.setStartDate(realStartDate);
     this.setEndDate(realEndDate);
     this.appService
-      .loadImages(fieldId, realStartDate, realEndDate)
+      .loadImages(fieldId, realStartDate, realEndDate, localStorage.getItem('token')!)
       .subscribe((data) => {
         this.isLoading = false;
         this.loadImagesMessage = '';
@@ -286,7 +289,7 @@ export class MapComponent implements OnInit, OnDestroy {
       this.isLoading = false;
     } else {
       this.appService
-        .loadImages(fieldId, startDate, endDate)
+        .loadImages(fieldId, startDate, endDate, localStorage.getItem('token')!)
         .subscribe((data) => {
           this.isLoading = false;
           this.loadImagesMessage = '';
@@ -368,7 +371,7 @@ export class MapComponent implements OnInit, OnDestroy {
       this.createFieldMessage = 'You need to fill all the fields first.';
     } else {
       this.appService
-        .createField(fieldId, daysBefore, bounderyType, fieldBoundery, provider)
+        .createField(fieldId, daysBefore, bounderyType, fieldBoundery, provider, localStorage.getItem('token')!)
         .subscribe((data) => {
           this.isLoading = false;
           this.createFieldMessage = data;
